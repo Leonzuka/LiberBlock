@@ -131,7 +131,7 @@ export default function AboutSection() {
               {[
                 { value: '12', label: 'Projects' },
                 { value: '+5', label: 'Years' },
-                { value: '100%', label: 'Passion' },
+                { value: '100%', label: 'Liberty' },
               ].map((stat, index) => (
                 <div key={stat.label} className="text-center">
                   <div className="text-3xl font-bold text-accent-bitcoin">

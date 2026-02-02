@@ -82,23 +82,17 @@ export default function HeroSection() {
 
         {/* Content Overlay - pointer-events: none to allow cube interaction */}
         <div className="absolute inset-0 z-20 pointer-events-none">
-          {/* Top tagline */}
-          <div className="absolute top-8 left-0 right-0 text-center">
-            <TextReveal delay={0.5}>
-              <p className="text-text-secondary font-mono text-sm tracking-widest uppercase">
-                Digital Innovation Studio
-              </p>
-            </TextReveal>
-          </div>
-
           {/* Right side - Instructions (only visible at start) */}
           <div
             className={`absolute top-1/2 right-8 -translate-y-1/2 text-right transition-all duration-700
                         ${scrollProgress < 0.05 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}
           >
-            <div className="space-y-2">
+            <div className="space-y-3">
               <p className="text-text-secondary text-sm">
                 <span className="text-accent-bitcoin">Drag</span> to explore
+              </p>
+              <p className="text-text-secondary text-sm">
+                <span className="text-accent-bitcoin">← → ↑ ↓</span> to rotate
               </p>
               <p className="text-text-secondary text-sm">
                 <span className="text-accent-bitcoin">Scroll</span> to navigate

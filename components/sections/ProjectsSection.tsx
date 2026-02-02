@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ExternalLink, Github } from 'lucide-react'
+import { ExternalLink, Github, Smartphone, Apple } from 'lucide-react'
 import { projects } from '@/lib/projects'
 import GlowCard from '@/components/ui/GlowCard'
 import MagneticButton from '@/components/ui/MagneticButton'
@@ -134,7 +134,7 @@ export default function ProjectsSection() {
                     </div>
 
                     {/* Links */}
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex flex-wrap gap-3 pt-2">
                       {project.link && (
                         <MagneticButton>
                           <a
@@ -164,6 +164,38 @@ export default function ProjectsSection() {
                           >
                             <Github className="w-4 h-4" />
                             Source
+                          </a>
+                        </MagneticButton>
+                      )}
+                      {project.playStore && (
+                        <MagneticButton>
+                          <a
+                            href={project.playStore}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm
+                                       font-medium rounded-lg border border-border
+                                       hover:border-accent-bitcoin hover:text-accent-bitcoin
+                                       transition-colors duration-300"
+                          >
+                            <Smartphone className="w-4 h-4" />
+                            Google Play
+                          </a>
+                        </MagneticButton>
+                      )}
+                      {project.appStore && (
+                        <MagneticButton>
+                          <a
+                            href={project.appStore}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm
+                                       font-medium rounded-lg border border-border
+                                       hover:border-accent-bitcoin hover:text-accent-bitcoin
+                                       transition-colors duration-300"
+                          >
+                            <Apple className="w-4 h-4" />
+                            App Store
                           </a>
                         </MagneticButton>
                       )}

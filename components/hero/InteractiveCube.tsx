@@ -32,9 +32,14 @@ export default function InteractiveCube({
   const [hasIntroPlayed, setHasIntroPlayed] = useState(false)
   const [isIntroAnimating, setIsIntroAnimating] = useState(true)
   const [currentFace, setCurrentFace] = useState(0)
+  const [isKeyboardControlling, setIsKeyboardControlling] = useState(false)
+  const [isTransitioningToIdle, setIsTransitioningToIdle] = useState(false)
   const targetRotation = useRef({ x: 0, y: 0 })
   const velocity = useRef({ x: 0, y: 0 })
+  const keyVelocity = useRef({ x: 0, y: 0 })
   const swayStartTime = useRef<number | null>(null)
+  const keyboardTimeout = useRef<NodeJS.Timeout | null>(null)
+  const transitionProgress = useRef(0)
 
   const { gl, camera } = useThree()
   const raycaster = useRef(new THREE.Raycaster())
@@ -202,6 +207,10 @@ export default function InteractiveCube({
     }
 
     const handlePointerUp = () => {
+      if (isDragging) {
+        setIsTransitioningToIdle(true)
+        transitionProgress.current = 0
+      }
       setIsDragging(false)
       canvas.style.cursor = isHovering ? 'grab' : 'default'
     }
@@ -242,6 +251,78 @@ export default function InteractiveCube({
     }
   }, [gl, camera, isDragging, isHovering])
 
+  // Handle keyboard events for arrow key rotation
+  useEffect(() => {
+    const ROTATION_SPEED = 0.06
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isIntroAnimating) return
+
+      let handled = false
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          keyVelocity.current.y = -ROTATION_SPEED
+          handled = true
+          break
+        case 'ArrowRight':
+          keyVelocity.current.y = ROTATION_SPEED
+          handled = true
+          break
+        case 'ArrowUp':
+          keyVelocity.current.x = -ROTATION_SPEED
+          handled = true
+          break
+        case 'ArrowDown':
+          keyVelocity.current.x = ROTATION_SPEED
+          handled = true
+          break
+      }
+
+      if (handled) {
+        e.preventDefault()
+        setIsKeyboardControlling(true)
+
+        // Clear existing timeout
+        if (keyboardTimeout.current) {
+          clearTimeout(keyboardTimeout.current)
+        }
+      }
+    }
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        // Reset the velocity for the released key
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          keyVelocity.current.y = 0
+        }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          keyVelocity.current.x = 0
+        }
+
+        // Set timeout to return to idle after keyboard control stops
+        keyboardTimeout.current = setTimeout(() => {
+          if (keyVelocity.current.x === 0 && keyVelocity.current.y === 0) {
+            setIsKeyboardControlling(false)
+            setIsTransitioningToIdle(true)
+            transitionProgress.current = 0
+          }
+        }, 1500)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      if (keyboardTimeout.current) {
+        clearTimeout(keyboardTimeout.current)
+      }
+    }
+  }, [isIntroAnimating])
+
   // Animation frame
   useFrame((state, delta) => {
     if (!groupRef.current) return
@@ -253,7 +334,14 @@ export default function InteractiveCube({
       return
     }
 
+    // Check if user is actively controlling (drag or keyboard)
+    const isUserControlling = isDragging || isKeyboardControlling
+
     if (isDragging) {
+      // Cancel any transition when user takes control
+      if (isTransitioningToIdle) setIsTransitioningToIdle(false)
+      swayStartTime.current = null
+
       // Apply velocity from drag
       mesh.rotation.x += velocity.current.x
       mesh.rotation.y += velocity.current.y
@@ -261,6 +349,14 @@ export default function InteractiveCube({
       // Dampen velocity
       velocity.current.x *= 0.95
       velocity.current.y *= 0.95
+    } else if (isKeyboardControlling) {
+      // Cancel any transition when user takes control
+      if (isTransitioningToIdle) setIsTransitioningToIdle(false)
+      swayStartTime.current = null
+
+      // Apply keyboard rotation
+      mesh.rotation.x += keyVelocity.current.x
+      mesh.rotation.y += keyVelocity.current.y
     } else if (scrollProgress > 0.01) {
       // Scroll-based rotation
       const faceIndex = Math.min(
@@ -287,7 +383,7 @@ export default function InteractiveCube({
         0.05
       )
     } else {
-      // Initialize sway start time on first frame after intro
+      // Initialize sway start time on first frame after intro or after user control
       if (swayStartTime.current === null) {
         swayStartTime.current = state.clock.elapsedTime
       }
@@ -295,9 +391,26 @@ export default function InteractiveCube({
       // Time since sway started (begins at 0)
       const swayTime = state.clock.elapsedTime - swayStartTime.current
 
-      // Gentle left-right sway (shows left and right faces)
-      mesh.rotation.y = Math.sin(swayTime * 0.4) * 0.4
-      mesh.rotation.x = Math.sin(swayTime * 0.3) * 0.1
+      // Target sway positions
+      const targetSwayY = Math.sin(swayTime * 0.4) * 0.4
+      const targetSwayX = Math.sin(swayTime * 0.3) * 0.1
+
+      if (isTransitioningToIdle) {
+        // Smoothly transition from current rotation to sway
+        transitionProgress.current = Math.min(transitionProgress.current + delta * 0.5, 1)
+
+        mesh.rotation.x = THREE.MathUtils.lerp(mesh.rotation.x, targetSwayX, transitionProgress.current * 0.03)
+        mesh.rotation.y = THREE.MathUtils.lerp(mesh.rotation.y, targetSwayY, transitionProgress.current * 0.03)
+
+        // End transition when close enough to target
+        if (transitionProgress.current >= 1) {
+          setIsTransitioningToIdle(false)
+        }
+      } else {
+        // Normal sway - gentle left-right (shows left and right faces)
+        mesh.rotation.y = targetSwayY
+        mesh.rotation.x = targetSwayX
+      }
     }
 
     // Subtle floating effect (reduced)

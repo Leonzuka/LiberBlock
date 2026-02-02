@@ -8,6 +8,8 @@ export interface Project {
   technologies: string[]
   link?: string
   github?: string
+  playStore?: string
+  appStore?: string
   color: string
 }
 
@@ -20,6 +22,8 @@ export const projects: Project[] = [
     texture: '/textures/Libertarian_Stone_Placeholder.jpeg',
     type: 'animated',
     technologies: ['Flutter', 'Dart'],
+    playStore: 'https://play.google.com/store/apps/details?id=com.leonardofeitosa.pedras_libertarias',
+    appStore: 'https://apps.apple.com', // TODO: Add App Store link when available
     color: '#F7931A',
   },
   {
@@ -30,6 +34,7 @@ export const projects: Project[] = [
     texture: '/textures/ArcaPy_placeholder.webp',
     type: 'screenshot',
     technologies: ['React', 'NodeJs', 'PostgreSQL'],
+    link: 'https://arcapy.com',
     github: 'https://github.com/liberblock/arcapy', //TODO: change link
     color: '#3776AB',
   },
