@@ -160,7 +160,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 ## Projects Showcased
 
-1. **Pedra Libertária** - Mini animated interface
+1. **Libertarian Stone** - Mini animated interface
 2. **ArcaPy** - Screenshot with hover effects
 3. **GardenRosasDecor** - Screenshot with hover effects
 4. **RPG 2D Godot** - Mini animated interface

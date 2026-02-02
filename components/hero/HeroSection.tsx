@@ -60,17 +60,17 @@ export default function HeroSection() {
     >
       <div
         ref={containerRef}
-        className="h-screen w-full flex items-center justify-center relative overflow-hidden"
+        className="h-screen w-full relative overflow-hidden"
       >
-        {/* 3D Scene */}
+        {/* 3D Scene - Full screen canvas */}
         {isLoaded && (
-          <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-10">
             <Scene className="w-full h-full">
               <Lights />
               <PlexusField
-                particleCount={150}
-                connectionDistance={1.8}
-                mouseRepulsion={0.5}
+                particleCount={180}
+                connectionDistance={2.0}
+                mouseRepulsion={0.6}
               />
               <InteractiveCube
                 scrollProgress={scrollProgress}
@@ -80,10 +80,10 @@ export default function HeroSection() {
           </div>
         )}
 
-        {/* Content Overlay */}
-        <div className="relative z-10 section-container w-full h-full flex flex-col justify-between py-32">
+        {/* Content Overlay - pointer-events: none to allow cube interaction */}
+        <div className="absolute inset-0 z-20 pointer-events-none">
           {/* Top tagline */}
-          <div className="text-center">
+          <div className="absolute top-8 left-0 right-0 text-center">
             <TextReveal delay={0.5}>
               <p className="text-text-secondary font-mono text-sm tracking-widest uppercase">
                 Digital Innovation Studio
@@ -91,48 +91,12 @@ export default function HeroSection() {
             </TextReveal>
           </div>
 
-          {/* Center - Project info panel */}
-          <div className="flex justify-between items-center gap-8">
-            {/* Left side - Project info */}
-            <div
-              className={`max-w-md transition-all duration-700 transform
-                          ${scrollProgress > 0.05 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
-            >
-              <div className="glassmorphism rounded-xl p-6">
-                <span
-                  className="inline-block px-3 py-1 text-xs font-mono rounded-full mb-4"
-                  style={{
-                    backgroundColor: `${currentProject.color}20`,
-                    color: currentProject.color,
-                    border: `1px solid ${currentProject.color}40`,
-                  }}
-                >
-                  {String(activeFace + 1).padStart(2, '0')} / 06
-                </span>
-                <h2 className="text-3xl font-bold mb-2">{currentProject.title}</h2>
-                <p className="text-text-secondary mb-4">
-                  {currentProject.description}
-                </p>
-                {currentProject.technologies.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {currentProject.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2 py-1 text-xs font-mono bg-bg-card rounded border border-border"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right side - Instructions */}
-            <div
-              className={`text-right transition-all duration-700 transform
-                          ${scrollProgress < 0.05 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}
-            >
+          {/* Right side - Instructions (only visible at start) */}
+          <div
+            className={`absolute top-1/2 right-8 -translate-y-1/2 text-right transition-all duration-700
+                        ${scrollProgress < 0.05 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}
+          >
+            <div className="space-y-2">
               <p className="text-text-secondary text-sm">
                 <span className="text-accent-bitcoin">Drag</span> to explore
               </p>
@@ -142,10 +106,70 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Bottom - Scroll indicator */}
-          <div className="text-center">
+          {/* Bottom left - Project info panel */}
+          <div
+            className={`absolute bottom-24 left-8 max-w-sm transition-all duration-700 transform pointer-events-auto
+                        ${scrollProgress > 0.05 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+          >
+            <div className="glassmorphism rounded-xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span
+                  className="inline-block px-3 py-1 text-xs font-mono rounded-full"
+                  style={{
+                    backgroundColor: `${currentProject.color}20`,
+                    color: currentProject.color,
+                    border: `1px solid ${currentProject.color}40`,
+                  }}
+                >
+                  {String(activeFace + 1).padStart(2, '0')} / 06
+                </span>
+                <div
+                  className="h-px flex-1"
+                  style={{ backgroundColor: `${currentProject.color}40` }}
+                />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">{currentProject.title}</h2>
+              <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+                {currentProject.description}
+              </p>
+              {currentProject.technologies.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {currentProject.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-2 py-1 text-xs font-mono bg-bg-primary/50 rounded border border-border"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom right - Face indicators */}
+          <div
+            className={`absolute bottom-24 right-8 transition-all duration-700
+                        ${scrollProgress > 0.05 ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <div className="flex flex-col gap-2">
+              {projects.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === activeFace
+                      ? 'bg-accent-bitcoin scale-125'
+                      : 'bg-border hover:bg-text-secondary'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom center - Scroll indicator (only visible at start) */}
+          <div className="absolute bottom-8 left-0 right-0 flex justify-center">
             <div
-              className={`inline-flex flex-col items-center gap-2 transition-opacity duration-500
+              className={`flex flex-col items-center gap-2 transition-opacity duration-500
                           ${scrollProgress > 0.02 ? 'opacity-0' : 'opacity-100'}`}
             >
               <span className="text-text-secondary text-xs font-mono uppercase tracking-widest">
@@ -159,7 +183,7 @@ export default function HeroSection() {
         </div>
 
         {/* Progress bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-bg-secondary z-20">
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-bg-secondary z-30">
           <div
             className="h-full bg-gradient-to-r from-accent-bitcoin to-accent-gold transition-all duration-100"
             style={{ width: `${scrollProgress * 100}%` }}

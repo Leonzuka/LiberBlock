@@ -61,7 +61,7 @@ Soft White:     #FAFAFA (text)
 - WebP images, 85% quality
 
 ## Projects Data
-1. Pedra Libertária - Mini animated interface
+1. Libertarian Stone - Mini animated interface
 2. ArcaPy - Screenshot with hover
 3. GardenRosasDecor - Screenshot with hover
 4. RPG 2D Godot - Mini animated interface

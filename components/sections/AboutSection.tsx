@@ -129,8 +129,8 @@ export default function AboutSection() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 mt-10">
               {[
-                { value: '4+', label: 'Projects' },
-                { value: '3+', label: 'Years' },
+                { value: '12', label: 'Projects' },
+                { value: '+5', label: 'Years' },
                 { value: '100%', label: 'Passion' },
               ].map((stat, index) => (
                 <div key={stat.label} className="text-center">
