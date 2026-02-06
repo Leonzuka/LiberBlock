@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, ReactNode } from 'react'
+import { useRef, useState, useCallback, ReactNode } from 'react'
 
 interface GlowCardProps {
   children: ReactNode
@@ -14,18 +14,16 @@ export default function GlowCard({
   glowColor = '#F7931A',
 }: GlowCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = cardRef.current
+    if (!el) return
 
-    const rect = cardRef.current.getBoundingClientRect()
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    })
-  }
+    const rect = el.getBoundingClientRect()
+    el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`)
+    el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`)
+  }, [])
 
   return (
     <div
@@ -45,8 +43,8 @@ export default function GlowCard({
       <div
         className="absolute pointer-events-none transition-opacity duration-300 z-0"
         style={{
-          left: mousePosition.x - 150,
-          top: mousePosition.y - 150,
+          left: 'calc(var(--mouse-x, 0px) - 150px)',
+          top: 'calc(var(--mouse-y, 0px) - 150px)',
           width: 300,
           height: 300,
           background: `radial-gradient(circle, ${glowColor}30 0%, transparent 70%)`,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useTexture, Edges } from '@react-three/drei'
 import * as THREE from 'three'
@@ -49,14 +49,14 @@ export default function InteractiveCube({
   const textures = useTexture([
     '/textures/Libertarian_Stone_Placeholder.jpeg',
     '/textures/ArcaPy_placeholder.webp',
-    '/textures/GardenRosasDecor_placeholder.png',
+    '/textures/GardenRosasDecor_placeholder.webp',
     '/textures/Jogo2D_placeholder.svg',
   ])
 
   // Load metal PBR textures
   const metalTextures = useTexture({
     map: '/textures/metal_0084_color_2k.jpg',
-    normalMap: '/textures/metal_0084_normal_opengl_2k.png',
+    normalMap: '/textures/metal_0084_normal_opengl_2k.jpg',
     roughnessMap: '/textures/metal_0084_roughness_2k.jpg',
     metalnessMap: '/textures/metal_0084_metallic_2k.jpg',
     aoMap: '/textures/metal_0084_ao_2k.jpg',
@@ -67,8 +67,8 @@ export default function InteractiveCube({
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping
   })
 
-  // Create materials for each face
-  const materials = [
+  // Create materials for each face (memoized to avoid re-creating on every render)
+  const materials = useMemo(() => [
     // Right face - ArcaPy
     new THREE.MeshStandardMaterial({
       map: textures[1],
@@ -119,7 +119,14 @@ export default function InteractiveCube({
       roughness: 1,
       metalness: 0,
     }),
-  ]
+  ], [textures, metalTextures])
+
+  // Dispose materials on unmount
+  useEffect(() => {
+    return () => {
+      materials.forEach((mat) => mat.dispose())
+    }
+  }, [materials])
 
   // Intro animation - cube appears with scale and fade in
   useEffect(() => {

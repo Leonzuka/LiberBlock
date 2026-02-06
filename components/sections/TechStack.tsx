@@ -26,6 +26,9 @@ const technologies = [
   { name: 'Git', category: 'Tools' },
 ]
 
+// Computed once at module scope since technologies is a static constant
+const categories = Array.from(new Set(technologies.map((t) => t.category)))
+
 export default function TechStack() {
   const sectionRef = useRef<HTMLElement>(null)
   const techRefs = useRef<HTMLDivElement[]>([])
@@ -59,9 +62,6 @@ export default function TechStack() {
 
     return () => ctx.revert()
   }, [])
-
-  // Group technologies by category
-  const categories = Array.from(new Set(technologies.map((t) => t.category)))
 
   return (
     <section

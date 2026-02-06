@@ -187,6 +187,10 @@ export default function PlexusField({
   // Track mouse position with smoothing
   const smoothMouse = useRef(new THREE.Vector2(0, 0))
 
+  // Reusable objects for animation loop (avoid allocations in useFrame)
+  const mouseWorldRef = useRef(new THREE.Vector3())
+  const tempColor = useRef(new THREE.Color())
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current.x = (e.clientX / size.width) * 2 - 1
@@ -213,8 +217,8 @@ export default function PlexusField({
     const positions = positionAttr.array as Float32Array
     const pulses = pulseAttr.array as Float32Array
 
-    // Convert mouse to world coordinates
-    const mouseWorld = new THREE.Vector3(
+    // Convert mouse to world coordinates (reuse ref to avoid allocation)
+    const mouseWorld = mouseWorldRef.current.set(
       smoothMouse.current.x * viewport.width * 0.5,
       smoothMouse.current.y * viewport.height * 0.5,
       0
@@ -307,20 +311,20 @@ export default function PlexusField({
           linePositions[idx + 4] = positions[j3 + 1]
           linePositions[idx + 5] = positions[j3 + 2]
 
-          // Color gradient from orange to gold based on depth
+          // Color gradient from orange to gold based on depth (reuse ref to avoid allocation)
           const depthFactor = Math.abs(positions[i3 + 2] + positions[j3 + 2]) / 10
-          const color = new THREE.Color().lerpColors(
+          tempColor.current.lerpColors(
             colors.bitcoinOrange,
             colors.gold,
             depthFactor + dataPulse * 0.3
           )
 
-          lineColors[idx] = color.r
-          lineColors[idx + 1] = color.g
-          lineColors[idx + 2] = color.b
-          lineColors[idx + 3] = color.r
-          lineColors[idx + 4] = color.g
-          lineColors[idx + 5] = color.b
+          lineColors[idx] = tempColor.current.r
+          lineColors[idx + 1] = tempColor.current.g
+          lineColors[idx + 2] = tempColor.current.b
+          lineColors[idx + 3] = tempColor.current.r
+          lineColors[idx + 4] = tempColor.current.g
+          lineColors[idx + 5] = tempColor.current.b
 
           // Alpha with pulse animation
           const finalAlpha = baseAlpha * (0.15 + dataPulse * 0.15)

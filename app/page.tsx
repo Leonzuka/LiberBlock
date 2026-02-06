@@ -17,23 +17,28 @@ const HeroSection = dynamic(() => import('@/components/hero/HeroSection'), {
   ),
 })
 
-import ProjectsSection from '@/components/sections/ProjectsSection'
-import AboutSection from '@/components/sections/AboutSection'
-import TechStack from '@/components/sections/TechStack'
-import ContactSection from '@/components/sections/ContactSection'
+// Lazy load sections below the fold to reduce initial bundle
+const ProjectsSection = dynamic(() => import('@/components/sections/ProjectsSection'), { ssr: false })
+const AboutSection = dynamic(() => import('@/components/sections/AboutSection'), { ssr: false })
+const TechStack = dynamic(() => import('@/components/sections/TechStack'), { ssr: false })
+const ContactSection = dynamic(() => import('@/components/sections/ContactSection'), { ssr: false })
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !sessionStorage.getItem('liberblock-loaded')
-    }
-    return true
-  })
+  // Always start with true to match server-side render
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleLoaderComplete = () => {
     sessionStorage.setItem('liberblock-loaded', '1')
     setIsLoading(false)
   }
+
+  // Check sessionStorage after hydration
+  useEffect(() => {
+    const hasLoaded = sessionStorage.getItem('liberblock-loaded')
+    if (hasLoaded) {
+      setIsLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     if (isLoading) {

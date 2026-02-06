@@ -20,6 +20,8 @@ export default function CustomCursor() {
 
     if (isTouchDevice) return
 
+    const processedElements = new WeakSet<Element>()
+
     const onMouseMove = (e: MouseEvent) => {
       if (!isVisibleRef.current) {
         isVisibleRef.current = true
@@ -45,14 +47,18 @@ export default function CustomCursor() {
     const onMouseEnterInteractive = () => setIsHovering(true)
     const onMouseLeaveInteractive = () => setIsHovering(false)
 
+    const addListenersToElement = (el: Element) => {
+      if (processedElements.has(el)) return
+      processedElements.add(el)
+      el.addEventListener('mouseenter', onMouseEnterInteractive)
+      el.addEventListener('mouseleave', onMouseLeaveInteractive)
+    }
+
     const interactiveElements = document.querySelectorAll(
       'a, button, [data-cursor-hover], input, textarea'
     )
 
-    interactiveElements.forEach((el) => {
-      el.addEventListener('mouseenter', onMouseEnterInteractive)
-      el.addEventListener('mouseleave', onMouseLeaveInteractive)
-    })
+    interactiveElements.forEach(addListenersToElement)
 
     window.addEventListener('mousemove', onMouseMove)
     document.documentElement.addEventListener('mouseleave', onMouseLeave)
@@ -62,10 +68,7 @@ export default function CustomCursor() {
       const newElements = document.querySelectorAll(
         'a, button, [data-cursor-hover], input, textarea'
       )
-      newElements.forEach((el) => {
-        el.addEventListener('mouseenter', onMouseEnterInteractive)
-        el.addEventListener('mouseleave', onMouseLeaveInteractive)
-      })
+      newElements.forEach(addListenersToElement)
     })
 
     observer.observe(document.body, { childList: true, subtree: true })

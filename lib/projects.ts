@@ -47,7 +47,7 @@ export const projects: Project[] = [
     description: 'Full-Stack E-commerce',
     longDescription: 'A complete e-commerce system for artificial flowers and religious articles shop in Brazil. Features user authentication, shopping cart, order management system, and payment integration — all built to serve a real local business.',
     features: ['User Authentication', 'Shopping Cart', 'Order Management', 'Payment Integration', 'Product Catalog', 'Responsive Design'],
-    texture: '/textures/GardenRosasDecor_placeholder.png',
+    texture: '/textures/GardenRosasDecor_placeholder.webp',
     type: 'screenshot',
     technologies: ['Flask', 'Python', 'JavaScript', 'Stripe'],
     link: 'https://www.gardenrosasdecor.com',
