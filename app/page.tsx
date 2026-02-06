@@ -1,6 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import BlockchainLoader from '@/components/ui/BlockchainLoader'
 
 // Dynamic imports for heavy 3D components
 const HeroSection = dynamic(() => import('@/components/hero/HeroSection'), {
@@ -21,8 +23,35 @@ import TechStack from '@/components/sections/TechStack'
 import ContactSection from '@/components/sections/ContactSection'
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('liberblock-loaded')
+    }
+    return true
+  })
+
+  const handleLoaderComplete = () => {
+    sessionStorage.setItem('liberblock-loaded', '1')
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isLoading])
+
   return (
     <>
+      {isLoading && (
+        <BlockchainLoader onComplete={handleLoaderComplete} />
+      )}
+
       {/* Hero with 3D Cube and Plexus particles */}
       <HeroSection />
 

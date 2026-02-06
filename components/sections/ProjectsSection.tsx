@@ -90,9 +90,9 @@ export default function ProjectsSection() {
               }}
             >
               <GlowCard glowColor={project.color} className="h-full">
-                <div className="p-6">
+                <div className="p-8">
                   {/* Project image */}
-                  <div className="relative aspect-video rounded-lg overflow-hidden mb-6 bg-bg-primary">
+                  <div className="relative aspect-video rounded-xl overflow-hidden mb-8 bg-bg-primary">
                     {project.texture && (
                       <Image
                         src={project.texture}
@@ -103,25 +103,48 @@ export default function ProjectsSection() {
                       />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/80 to-transparent" />
+                    {/* Type badge */}
+                    <span
+                      className="absolute top-4 right-4 px-3 py-1 text-[11px] font-mono uppercase tracking-wider rounded-full backdrop-blur-sm"
+                      style={{
+                        backgroundColor: `${project.color}20`,
+                        color: project.color,
+                        border: `1px solid ${project.color}40`,
+                      }}
+                    >
+                      {project.description}
+                    </span>
                   </div>
 
                   {/* Project info */}
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
-                        <p className="text-text-secondary">
-                          {project.longDescription}
-                        </p>
-                      </div>
+                  <div className="space-y-5">
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold mb-3">{project.title}</h3>
+                      <p className="text-text-secondary text-[15px] leading-relaxed">
+                        {project.longDescription}
+                      </p>
                     </div>
+
+                    {/* Feature highlights */}
+                    {project.features && project.features.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {project.features.map((feature) => (
+                          <span
+                            key={feature}
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-md bg-white/[0.04] text-text-secondary border border-white/[0.06]"
+                          >
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Technologies */}
                     <div className="flex flex-wrap gap-2">
                       {project.technologies.map((tech) => (
                         <span
                           key={tech}
-                          className="px-3 py-1 text-xs font-mono rounded-full"
+                          className="px-3 py-1.5 text-xs font-mono rounded-full"
                           style={{
                             backgroundColor: `${project.color}15`,
                             color: project.color,
@@ -134,14 +157,14 @@ export default function ProjectsSection() {
                     </div>
 
                     {/* Links */}
-                    <div className="flex flex-wrap gap-3 pt-2">
+                    <div className="flex flex-wrap gap-3 pt-3 border-t border-white/[0.06]">
                       {project.link && (
                         <MagneticButton>
                           <a
                             href={project.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm
+                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm
                                        font-medium rounded-lg border border-border
                                        hover:border-accent-bitcoin hover:text-accent-bitcoin
                                        transition-colors duration-300"
@@ -157,7 +180,7 @@ export default function ProjectsSection() {
                             href={project.github}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm
+                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm
                                        font-medium rounded-lg border border-border
                                        hover:border-accent-bitcoin hover:text-accent-bitcoin
                                        transition-colors duration-300"
@@ -173,7 +196,7 @@ export default function ProjectsSection() {
                             href={project.playStore}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm
+                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm
                                        font-medium rounded-lg border border-border
                                        hover:border-accent-bitcoin hover:text-accent-bitcoin
                                        transition-colors duration-300"
@@ -189,7 +212,7 @@ export default function ProjectsSection() {
                             href={project.appStore}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm
+                            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm
                                        font-medium rounded-lg border border-border
                                        hover:border-accent-bitcoin hover:text-accent-bitcoin
                                        transition-colors duration-300"

@@ -17,12 +17,12 @@ const technologies = [
   { name: 'Node.js', category: 'Backend' },
   { name: 'Python', category: 'Backend' },
   { name: 'PostgreSQL', category: 'Database' },
-  { name: 'Redis', category: 'Database' },
+  { name: 'Flutter', category: 'Language' },
   { name: 'Docker', category: 'DevOps' },
   { name: 'Godot', category: 'Game Dev' },
   { name: 'Unity', category: 'Game Dev' },
-  { name: 'Solidity', category: 'Blockchain' },
-  { name: 'Web3.js', category: 'Blockchain' },
+  { name: 'Bitcoin', category: 'Blockchain' },
+  { name: 'Web 3.0', category: 'Tools' },
   { name: 'Git', category: 'Tools' },
 ]
 

@@ -3,6 +3,7 @@ export interface Project {
   title: string
   description: string
   longDescription: string
+  features?: string[]
   texture: string
   type: 'animated' | 'screenshot' | 'logo' | 'contact'
   technologies: string[]
@@ -17,11 +18,12 @@ export const projects: Project[] = [
   {
     id: 'Libertarian-Stone',
     title: 'Libertarian Stone',
-    description: 'Philosophical learning-gaming experience',
-    longDescription: 'An immersive app about libertarian philosophy through interactive books, games and videos.',
+    description: 'Educational Philosophy Platform',
+    longDescription: 'Libertarian Stone is an educational app built with Flutter that offers a complete platform for learning libertarian philosophy. It combines a library, YouTube videos, interactive games, personal notes, a gamified achievement system, premium content, and productivity tools.',
+    features: ['Multi-format Library', 'Interactive Games', 'Gamified Achievements', 'Premium Content', 'YouTube Integration'],
     texture: '/textures/Libertarian_Stone_Placeholder.jpeg',
     type: 'animated',
-    technologies: ['Flutter', 'Dart'],
+    technologies: ['Flutter', 'Dart', 'Firebase'],
     playStore: 'https://play.google.com/store/apps/details?id=com.leonardofeitosa.pedras_libertarias',
     appStore: 'https://apps.apple.com', // TODO: Add App Store link when available
     color: '#F7931A',
@@ -29,11 +31,12 @@ export const projects: Project[] = [
   {
     id: 'arcapy',
     title: 'ArcaPy',
-    description: 'Python automation toolkit',
-    longDescription: 'A website to view and publish real states properties in Paraguay.',
+    description: 'Real Estate Marketplace',
+    longDescription: 'ArcaPy is a complete real estate marketplace platform for properties in Paraguay. Built with React 19, Express, and TypeScript, it features a full property management system, image upload, favorites, notifications, subscription and payment system, and multi-language support (ES/PT/EN).',
+    features: ['Property Management', 'Image Upload', 'Payments & Subscriptions', 'Multi-language (ES/PT/EN)'],
     texture: '/textures/ArcaPy_placeholder.webp',
     type: 'screenshot',
-    technologies: ['React', 'NodeJs', 'PostgreSQL'],
+    technologies: ['React', 'Express', 'TypeScript', 'PostgreSQL'],
     link: 'https://arcapy.com',
     github: 'https://github.com/liberblock/arcapy', //TODO: change link
     color: '#3776AB',
@@ -41,11 +44,12 @@ export const projects: Project[] = [
   {
     id: 'garden-rosas-decor',
     title: 'GardenRosasDecor',
-    description: 'E-commerce platform',
-    longDescription: 'Beautiful e-commerce for a garden decoration with payment integration with focus in Brazil.',
+    description: 'Full-Stack E-commerce',
+    longDescription: 'A complete e-commerce system for artificial flowers and religious articles shop in Brazil. Features user authentication, shopping cart, order management system, and payment integration — all built to serve a real local business.',
+    features: ['User Authentication', 'Shopping Cart', 'Order Management', 'Payment Integration', 'Product Catalog', 'Responsive Design'],
     texture: '/textures/GardenRosasDecor_placeholder.png',
     type: 'screenshot',
-    technologies: ['Flask(Python)', 'JavaScript', 'Stripe'],
+    technologies: ['Flask', 'Python', 'JavaScript', 'Stripe'],
     link: 'https://www.gardenrosasdecor.com',
     color: '#db1ccb',
   },
@@ -53,7 +57,7 @@ export const projects: Project[] = [
     id: 'rpg-2d-godot',
     title: 'RPG 2D Godot',
     description: '2D adventure game',
-    longDescription: 'A retro-styled 2D RPG built with Godot engine featuring pixel art graphics.',
+    longDescription: 'A retro-styled 2D RPG built with Godot engine.',
     texture: '/textures/Jogo2D_placeholder.svg',
     type: 'animated',
     technologies: ['Godot', 'GDScript', '2D Art', 'Steam'],

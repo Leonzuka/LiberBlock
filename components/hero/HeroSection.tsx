@@ -12,6 +12,7 @@ const Scene = dynamic(() => import('@/components/three/Scene'), { ssr: false })
 const InteractiveCube = dynamic(() => import('./InteractiveCube'), { ssr: false })
 const PlexusField = dynamic(() => import('./PlexusField'), { ssr: false })
 const Lights = dynamic(() => import('@/components/three/Lights'), { ssr: false })
+const FloatingWords = dynamic(() => import('./FloatingWords'), { ssr: false })
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -62,6 +63,13 @@ export default function HeroSection() {
         ref={containerRef}
         className="h-screen w-full relative overflow-hidden"
       >
+        {/* Floating words behind the cube */}
+        {isLoaded && (
+          <div className="absolute inset-0 z-[5]">
+            <FloatingWords />
+          </div>
+        )}
+
         {/* 3D Scene - Full screen canvas */}
         {isLoaded && (
           <div className="absolute inset-0 z-10">
