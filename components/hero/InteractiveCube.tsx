@@ -2,10 +2,10 @@
 
 import { useRef, useState, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useTexture, Edges } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
-import { projects } from '@/lib/projects'
+import LiberBlockFace from './LiberBlockFace'
 
 interface InteractiveCubeProps {
   scrollProgress?: number
@@ -13,13 +13,28 @@ interface InteractiveCubeProps {
 }
 
 const faceRotations = [
-  { x: 0, y: 0 },           // Front - Libertarian Stone
+  { x: 0, y: 0 },           // Front - LiberBlock
   { x: 0, y: Math.PI / 2 }, // Right - ArcaPy
   { x: 0, y: Math.PI },     // Back - GardenRosas
   { x: 0, y: -Math.PI / 2 },// Left - RPG 2D
-  { x: -Math.PI / 2, y: 0 },// Top - Logo
+  { x: -Math.PI / 2, y: 0 },// Top - Libertarian Stone
   { x: Math.PI / 2, y: 0 }, // Bottom - Contact
 ]
+
+// Determine which face is most visible to the camera based on current rotation
+function computeVisibleFace(rotX: number, rotY: number): number {
+  let bestFace = 0
+  let bestScore = -Infinity
+  for (let i = 0; i < faceRotations.length; i++) {
+    const { x, y } = faceRotations[i]
+    const score = Math.cos(rotX - x) + Math.cos(rotY - y)
+    if (score > bestScore) {
+      bestScore = score
+      bestFace = i
+    }
+  }
+  return bestFace
+}
 
 export default function InteractiveCube({
   scrollProgress = 0,
@@ -45,81 +60,18 @@ export default function InteractiveCube({
   const raycaster = useRef(new THREE.Raycaster())
   const mouse = useRef(new THREE.Vector2())
 
-  // Load textures for faces with images
-  const textures = useTexture([
-    '/textures/Libertarian_Stone_Placeholder.jpeg',
-    '/textures/ArcaPy_placeholder.webp',
-    '/textures/GardenRosasDecor_placeholder.webp',
-    '/textures/Jogo2D_placeholder.svg',
-  ])
-
-  // Load metal PBR textures
-  const metalTextures = useTexture({
-    map: '/textures/metal_0084_color_2k.jpg',
-    normalMap: '/textures/metal_0084_normal_opengl_2k.jpg',
-    roughnessMap: '/textures/metal_0084_roughness_2k.jpg',
-    metalnessMap: '/textures/metal_0084_metallic_2k.jpg',
-    aoMap: '/textures/metal_0084_ao_2k.jpg',
-  })
-
-  // Configure texture wrapping
-  Object.values(metalTextures).forEach((texture) => {
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping
-  })
-
   // Create materials for each face (memoized to avoid re-creating on every render)
-  const materials = useMemo(() => [
-    // Right face - ArcaPy
-    new THREE.MeshStandardMaterial({
-      map: textures[1],
-      roughness: 1,
-      metalness: 0,
-    }),
-    // Left face - RPG 2D
-    new THREE.MeshStandardMaterial({
-      map: textures[3],
-      roughness: 1,
-      metalness: 0,
-    }),
-    // Top face - Logo (metal with orange tint)
-    new THREE.MeshStandardMaterial({
-      map: metalTextures.map,
-      normalMap: metalTextures.normalMap,
-      roughnessMap: metalTextures.roughnessMap,
-      metalnessMap: metalTextures.metalnessMap,
-      aoMap: metalTextures.aoMap,
-      color: '#F7931A',
-      roughness: 1,
-      metalness: 1,
-      emissive: '#F7931A',
-      emissiveIntensity: 0.15,
-    }),
-    // Bottom face - Contact (metal with gold tint)
-    new THREE.MeshStandardMaterial({
-      map: metalTextures.map,
-      normalMap: metalTextures.normalMap,
-      roughnessMap: metalTextures.roughnessMap,
-      metalnessMap: metalTextures.metalnessMap,
-      aoMap: metalTextures.aoMap,
-      color: '#D4AF37',
-      roughness: 1,
-      metalness: 1,
-      emissive: '#D4AF37',
-      emissiveIntensity: 0.15,
-    }),
-    // Front face - Libertarian Stone
-    new THREE.MeshStandardMaterial({
-      map: textures[0],
-      roughness: 1,
-      metalness: 0,
-    }),
-    // Back face - GardenRosas
-    new THREE.MeshStandardMaterial({
-      map: textures[2],
-      roughness: 1,
-      metalness: 0,
-    }),
-  ], [textures, metalTextures])
+  const materials = useMemo(() => {
+    const baseMat = { color: '#0A0A0B', roughness: 1, metalness: 0 }
+    return [
+      new THREE.MeshStandardMaterial(baseMat), // Right (+X)
+      new THREE.MeshStandardMaterial(baseMat), // Left (-X)
+      new THREE.MeshStandardMaterial(baseMat), // Top (+Y)
+      new THREE.MeshStandardMaterial(baseMat), // Bottom (-Y)
+      new THREE.MeshStandardMaterial(baseMat), // Front (+Z) - LiberBlock
+      new THREE.MeshStandardMaterial(baseMat), // Back (-Z)
+    ]
+  }, [])
 
   // Dispose materials on unmount
   useEffect(() => {
@@ -420,6 +372,15 @@ export default function InteractiveCube({
       }
     }
 
+    // Detect which face is visible for non-scroll modes (drag, keyboard, idle)
+    if (scrollProgress <= 0.01) {
+      const detected = computeVisibleFace(mesh.rotation.x, mesh.rotation.y)
+      if (detected !== currentFace) {
+        setCurrentFace(detected)
+        onFaceChange?.(detected)
+      }
+    }
+
     // Subtle floating effect (reduced)
     mesh.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.03
   })
@@ -438,6 +399,7 @@ export default function InteractiveCube({
           lineWidth={1.5}
         />
       </mesh>
+      <LiberBlockFace isActive={currentFace === 0} />
     </group>
   )
 }
